@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Personal Notes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 10px;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Personal Notes</h1>
+  <div>
+    <h2>Create Subject</h2>
+    <div class="form-group">
+      <label>Subject Name:</label>
+      <input type="text" id="subjectName">
+    </div>
+    <button onclick="createSubject()">Create Subject</button>
+  </div>
+  <hr>
+  <div>
+    <h2>Create Chapter</h2>
+    <div class="form-group">
+      <label>Subject Name:</label>
+      <input type="text" id="chapterSubject">
+    </div>
+    <div class="form-group">
+      <label>Chapter Name:</label>
+      <input type="text" id="chapterName">
+    </div>
+    <div class="form-group">
+      <label>Notes:</label>
+      <textarea id="chapterNotes"></textarea>
+    </div>
+    <button onclick="createChapter()">Create Chapter</button>
+  </div>
+  <hr>
+  <div>
+    <h2>View Notes</h2>
+    <div class="form-group">
+      <label>Subject Name:</label>
+      <input type="text" id="viewSubject">
+    </div>
+    <div class="form-group">
+      <label>Chapter Name:</label>
+      <input type="text" id="viewChapter">
+    </div>
+    <button onclick="viewNotes()">View Notes</button>
+    <pre id="notesDisplay"></pre>
+  </div>
+  <script>
+    const API_URL = "https://personal-notes.your-domain.workers.dev/";
+
+    async function createSubject() {
+      const subject = document.getElementById("subjectName").value;
+      const response = await fetch(`${API_URL}subject`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject }),
+      });
+      alert("Subject created!");
+    }
+
+    async function createChapter() {
+      const subject = document.getElementById("chapterSubject").value;
+      const chapter = document.getElementById("chapterName").value;
+      const notes = document.getElementById("chapterNotes").value;
+      await fetch(`${API_URL}chapter`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, chapter, notes }),
+      });
+      alert("Chapter created!");
+    }
+
+    async function viewNotes() {
+      const subject = document.getElementById("viewSubject").value;
+      const chapter = document.getElementById("viewChapter").value;
+      const response = await fetch(`${API_URL}chapter`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, chapter }),
+      });
+      const notes = await response.json();
+      document.getElementById("notesDisplay").textContent = notes.notes || "No notes found.";
+    }
+  </script>
+</body>
+</html>
